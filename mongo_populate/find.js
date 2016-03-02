@@ -32,27 +32,14 @@ function showFound (limit, cursor) {
 }
 
 function countFound (cursor) {
-    return new Promise(function (fulfill, reject) {
-        cursor.count(function (err, count) {
-            if (err) {
-                return reject(err);
-            }
-            console.log('Amount is', count);
-            fulfill(cursor);
-        });
+    return cursor.count().then(function (count) {
+        console.log('Amount is', count);
     });
 }
 
 function getCursor (collection) {
-    return new Promise(function (fulfill, reject) {
-        collection.find(function (err, cursor) {
-            if (err) {
-                reject(err);
-            }
-            console.log('Pick entries');
-            fulfill(cursor);
-        });
-    });
+    console.log('Pick entries');
+    return collection.find();
 }
 
 function getInBounds (property, lowerBound, upperBound, collections) {
@@ -65,30 +52,16 @@ function getInBounds (property, lowerBound, upperBound, collections) {
     if (!!upperBound || upperBound === 0) {
         filter[property]["$lt"] = upperBound;
     }
-    return new Promise(function (fulfill, reject) {
-        collection.find(filter, function (err, data) {
-            if (err) {
-                return reject(err);
-            }
-            console.log(['Pick by', property, 'from', lowerBound, 'to', upperBound].join(' '));
-            fulfill(data);
-        });
-    });
+    console.log(['Pick by', property, 'from', lowerBound, 'to', upperBound].join(' '));
+    return collection.find(filter);
 }
 
 function findByCategory(key, value, collections) {
     var collection = collections[COLLECTION.PRODUCT];
     var query = {};
     query[key] = value;
-    return new Promise(function (fulfill, reject) {
-        collection.find(query, function (err, data) {
-            if (err) {
-                return reject(err);
-            }
-            console.log(['Pick where', key, 'is', value].join(' '));
-            fulfill(data);
-        })
-    })
+    console.log(['Pick where', key, 'is', value].join(' '));
+    return collection.find(query)
 }
 
 module.exports.getCollection = getCollection;
