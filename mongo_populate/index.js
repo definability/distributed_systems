@@ -30,10 +30,26 @@ MongoClient.connect(url, function(err, db) {
             });
           break;
       case 'find':
-            find.getCollection(db, COLLECTION.PRODUCT)
+            var collections = {};
+            find.getCollection(db, COLLECTION.PRODUCT).then(function (collection) {
+                collections[COLLECTION.PRODUCT] = collection;
+                return new Promise(function (fulfill, reject) {
+                    fulfill(collection);
+                });
+            }, function (err) {
+                console.error(err);
+            })
             .then(find.getCursor, function (err) {
                 console.error(err);
             }).then(find.showFound.bind(null, LIMIT), function (err) {
+                console.error(err);
+            }).then(find.getInBounds.bind(null, 'size', 100, 1000, collections), function (err) {
+                console.error(err);
+            }).then(find.showFound.bind(null, LIMIT), function (err) {
+                console.error(err);
+            }).then(find.findByCategory.bind(null, 'department', 'Electronics', collections), function (err) {
+                console.error(err);
+            }).then(find.countFound.bind(null), function (err) {
                 console.error(err);
             }).then(function () {
                 console.log("Disconnect");
