@@ -42,8 +42,8 @@ function getCursor (collection) {
     return collection.find();
 }
 
-function getInBounds (property, lowerBound, upperBound, collections) {
-    var collection = collections[COLLECTION.PRODUCT];
+function getInBounds (property, lowerBound, upperBound, collections, currentCollection) {
+    var collection = collections[currentCollection];
     var filter = {};
     filter[property] = {};
     if (!!lowerBound || lowerBound === 0) {
@@ -56,12 +56,18 @@ function getInBounds (property, lowerBound, upperBound, collections) {
     return collection.find(filter);
 }
 
-function findByCategory(key, value, collections) {
-    var collection = collections[COLLECTION.PRODUCT];
+function findByCategory(key, value, collections, currentCollection) {
+    var collection = collections[currentCollection];
     var query = {};
     query[key] = value;
     console.log(['Pick where', key, 'is', value].join(' '));
     return collection.find(query)
+}
+
+function getValues(field, collections, currentCollection) {
+    var collection = collections[currentCollection];
+    console.log('Get values of', field);
+    return collection.distinct(field);
 }
 
 module.exports.getCollection = getCollection;
@@ -70,4 +76,5 @@ module.exports.countFound = countFound;
 module.exports.getCursor = getCursor;
 module.exports.getInBounds = getInBounds;
 module.exports.findByCategory = findByCategory;
+module.exports.getValues = getValues;
 
