@@ -3,11 +3,8 @@
 var faker = require('faker');
 var assert = require('assert');
 
-var COLLECTION = {
-    PRODUCT: 'products',
-    CUSTOMER: 'customers',
-    ORDER: 'orders'
-};
+var COLLECTION = require('./constants').COLLECTION;
+var PRODUCTS_SIMILARITY = 0.3;
 
 function getCollection(db, name) {
     return new Promise(function (fulfill, reject) {
@@ -35,7 +32,7 @@ function generateProduct() {
     var product = {
         name: faker.commerce.productName(),
         producer: faker.company.companyName(),
-        price: faker.commerce.price()
+        price: Number(faker.commerce.price())
     };
     var properties = {
         size: faker.random.number(),
@@ -45,7 +42,9 @@ function generateProduct() {
         department: faker.commerce.department()
     };
     Object.keys(properties).forEach(function (key) {
-        product[key] = properties[key];
+        if (Math.random() > 1 - PRODUCTS_SIMILARITY) {
+            product[key] =  properties[key];
+        }
     })
     return product;
 }
@@ -73,7 +72,6 @@ function generateOrder(customers, products, neededProducts) {
         }
     }
     var order = {
-        order_number: faker.random.number(),
         date: faker.date.past(),
         total_sum: customerProducts.reduce(function (memo, item) {
             return memo + item.price;
@@ -83,7 +81,6 @@ function generateOrder(customers, products, neededProducts) {
             card_owner: [customer.name, customer.surname].join(' '),
             cardId: faker.finance.account()
         },
-        payment: customer.payment,
         order_items_id: customerProducts.map(function (item) {
             return {
                 "$ref": COLLECTION.PRODUCT,
@@ -109,7 +106,8 @@ function generateItems(collection, amount, generator) {
     });
 }
 
-function createCollections(db) {
+function createCollections(db, amount) {
+    assert(!!amount);
     var pCustomer = new Promise(function (fulfill, reject) {
         db.collection(COLLECTION.CUSTOMER, function (err, collection) {
             if (err) {
@@ -118,7 +116,7 @@ function createCollections(db) {
             fulfill(collection);
         });
     }).then(function (collection) {
-        return generateItems(collection, 10, generateCustomer);
+        return generateItems(collection, amount.customers, generateCustomer);
     });
 
     var pProduct = new Promise(function (fulfill, reject) {
@@ -129,7 +127,7 @@ function createCollections(db) {
             fulfill(collection);
         });
     }).then(function (collection) {
-        return generateItems(collection, 100, generateProduct);
+        return generateItems(collection, amount.products, generateProduct);
     });
 
     return Promise.all([pCustomer, pProduct]).then(function (value) {
@@ -147,7 +145,8 @@ function createCollections(db) {
             });
         })
     }).then(function (data) {
-        return generateItems(data.collection, 100, generateOrder.bind(null, data.customers, data.products, 10));
+        var gen = generateOrder.bind(null, data.customers, data.products, amount.products_per_order);
+        return generateItems(data.collection, amount.orders, gen);
     }, function (err) {
         console.error(err);
     });
