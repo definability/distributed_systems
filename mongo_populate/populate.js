@@ -7,14 +7,7 @@ var COLLECTION = require('./constants').COLLECTION;
 var PRODUCTS_SIMILARITY = 0.3;
 
 function getCollection(db, name) {
-    return new Promise(function (fulfill, reject) {
-        db.collection(name, function (err, data) {
-            if (err) {
-                return reject(err);
-            }
-            fulfill(data);
-        });
-    });
+    return db.collection(name);
 }
 
 function generateCustomer() {
@@ -96,14 +89,7 @@ function generateItems(collection, amount, generator) {
     for (var i = 0; i < amount; i++) {
         products.push(generator());
     }
-    return new Promise(function (fulfill, reject) {
-        collection.insert(products, function (err, data) {
-            if (err) {
-                return reject(err);
-            }
-            fulfill(data);
-        });
-    });
+    return collection.insert(products);
 }
 
 function createCollections(db, amount) {
