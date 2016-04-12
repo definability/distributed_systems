@@ -1,0 +1,34 @@
+sudo docker run --name m_primary -p 27018:27017 --rm mongo --enableMajorityReadConcern --replSet rs0
+sudo docker run --name m_secondary1 -p 27019:27017 --rm mongo --enableMajorityReadConcern --replSet rs0
+sudo docker run --name m_secondary2 -p 27020:27017 --rm mongo --enableMajorityReadConcern --replSet rs0
+
+sudo docker inspect m_primary m_secondary1 m_secondary2 | grep '"IPAddress"' | sed 's/ *//g' | uniq
+
+mongo --port 27018 --eval 'rs.initiate({
+    _id: "rs0",
+    version: 3,
+    members: [{
+        _id: 0,
+        host: "172.17.0.2:27017"
+    }]
+})'
+
+rsconf = {
+    _id: "rs0",
+    version: 1,
+    members: [{
+        _id: 0,
+        host: "172.17.0.2:27017"
+    }, {
+        _id: 1,
+        host: "172.17.0.3:27017"
+    }, {
+        _id: 2,
+        host: "172.17.0.4:27017"
+    }]
+}
+rs.initiate(rsconf)
+
+rs.add('172.17.0.3:27017')
+rs.add('172.17.0.4:27017')
+

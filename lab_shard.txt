@@ -1,0 +1,21 @@
+sudo docker run --name m_primary    -p 27018:27019 --rm mongo --enableMajorityReadConcern --replSet configReplSet --configsvr
+sudo docker run --name m_secondary1 -p 27019:27019 --rm mongo --enableMajorityReadConcern --replSet configReplSet --configsvr
+sudo docker run --name m_secondary2 -p 27020:27019 --rm mongo --enableMajorityReadConcern --replSet configReplSet --configsvr
+
+mongo --port 27018 --eval 'rs.initiate({
+    _id: "configReplSet",
+    configsvr: true,
+    members: [{
+        _id: 0,
+        host: "172.17.0.2:27019"
+    }, {
+        _id: 1,
+        host: "172.17.0.3:27019"
+    }, {
+        _id: 2,
+        host: "172.17.0.4:27019"
+    }]
+})'
+
+mongos --configdb configReplSet/172.17.0.2:27019
+
