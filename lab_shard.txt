@@ -1,21 +1,37 @@
-sudo docker run --name m_primary    -p 27018:27019 --rm mongo --enableMajorityReadConcern --replSet configReplSet --configsvr
-sudo docker run --name m_secondary1 -p 27019:27019 --rm mongo --enableMajorityReadConcern --replSet configReplSet --configsvr
-sudo docker run --name m_secondary2 -p 27020:27019 --rm mongo --enableMajorityReadConcern --replSet configReplSet --configsvr
+sudo docker run --name m_shard0000 -p 27019:27000 --rm mongo --port 27000
+sudo docker run --name m_shard0001 -p 27018:27000 --rm mongo --port 27000
+sudo docker run --name m_shard0002 -p 27019:27000 --rm mongo --port 27000
+sudo docker run --name m_secondary2 -p 27020:27000 --rm mongo configReplSet --configsvr --port 27000
 
-mongo --port 27018 --eval 'rs.initiate({
-    _id: "configReplSet",
-    configsvr: true,
-    members: [{
-        _id: 0,
-        host: "172.17.0.2:27019"
-    }, {
-        _id: 1,
-        host: "172.17.0.3:27019"
-    }, {
-        _id: 2,
-        host: "172.17.0.4:27019"
-    }]
-})'
+mongos --configdb configReplSet/172.17.0.5:27000 --port 27000
+# sudo docker run -t -i --rm --name m_client mongos bash
 
-mongos --configdb configReplSet/172.17.0.2:27019
+mongo --port 27000
+
+sh.addShard('172.17.0.2:27000')
+sh.addShard('172.17.0.3:27000')
+sh.addShard('172.17.0.4:27000')
+
+use admin
+sh.enableSharding('bank')
+
+use config
+db.settings.save({
+    _id:"chunksize",
+    value: 1
+})
+
+use bank
+
+for (var i=0; i<500000; i++) {
+    db.tickets.insert({name: 'Max', amount: Math.random()*100})
+}
+db.tickets.ensureIndex({amount: 1})
+db.tickets.stats()
+
+use admin
+db.runCommand({shardCollection: "bank.tickets", key: {amount: 1}})
+
+use bank
+db.printShardingStatus()
 
