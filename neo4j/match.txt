@@ -1,0 +1,21 @@
+// Products bought with pistol in one order
+match (p:Product)-[:in]->(o:Order)<-[:in]-(p1:Product {name: 'Pistol'}) return p.name
+
+// Products bought by person who bought this product
+match (p:Product)-[:in]->(o:Order)<-[:ordered]-(c:Customer)-[:ordered]->(o1:Order)<-[:in]-(p1:Product {name: 'Pistol'})
+return p.name as title
+union all match (p:Product)-[:in]->(o:Order)<-[:in]-(p1:Product {name: 'Pistol'})
+return p.name as title
+
+// Products viewed by customer, who viewed this product
+match (p:Product)<-[:viewed]-(c:Customer)-[:viewed]->(p1:Product {name: 'Meat'}) return p.name
+
+match (p:Product)-[:in]->(o:Order)<-[:ordered]-(c:Customer)-[:ordered]->(o1:Order)<-[:in]-(p1:Product {name: 'Milk'})
+return p.name as title
+union match (p:Product)-[:in]->(o:Order)<-[:in]-(p1:Product {name: 'Milk'})
+return p.name as title
+union match (p:Product)<-[:viewed]-(c:Customer)-[:viewed]->(p1:Product {name: 'Milk'})
+return p.name as title
+union match (p:Product)<-[:viewed]-(c:Customer)-[:ordered]->(o1:Order)<-[:in]-(p1:Product {name: 'Milk'})
+return p.name as title
+

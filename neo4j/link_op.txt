@@ -1,0 +1,9 @@
+create (weapon1)-[:in]->(order1),
+    (weapon2)-[:in]->(order1);
+
+create (food1)-[:in]->(order2),
+    (food2)-[:in]->(order2);
+
+create (food3)-[:in]->(order3),
+    (weapon3)-[:in]->(order3);
+

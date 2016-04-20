@@ -1,0 +1,34 @@
+create (customer1:Customer {name: 'John'}),
+       (customer2:Customer {name: 'Terminator'}),
+
+       (order1:Order {name: 'Weapon shop'}),
+       (order2:Order {name: 'Food shop'}),
+       (order3:Order {name: 'Supermarket'}),
+
+       (weapon1:Product {name: 'Gun'}),
+       (weapon2:Product {name: 'Pistol'}),
+       (weapon3:Product {name: 'Machine gun'}),
+
+       (food1:Product {name: 'Bread'}),
+       (food2:Product {name: 'Meat'}),
+       (food3:Product {name: 'Milk'}),
+
+       (customer1)-[:ordered]->(order1),
+       (customer2)-[:ordered]->(order2),
+       (customer1)-[:ordered]->(order3),
+
+       (weapon1)-[:in]->(order1),
+       (weapon2)-[:in]->(order1),
+
+       (food1)-[:in]->(order2),
+       (food2)-[:in]->(order2),
+
+       (food3)-[:in]->(order3),
+       (weapon3)-[:in]->(order3),
+
+       (customer1)-[:viewed]->(food1),
+       (customer1)-[:viewed]->(food2),
+       (customer2)-[:viewed]->(food1),
+       (customer2)-[:viewed]->(food2),
+       (customer2)-[:viewed]->(weapon3);
+

@@ -1,0 +1,4 @@
+create (customer1)-[:ordered]->(order1),
+    (customer2)-[:ordered]->(order2),
+    (customer1)-[:ordered]->(order3);
+
