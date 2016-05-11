@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from pika import BlockingConnection, ConnectionParameters
 from sys import argv
-from src.remote_greeting import on_request
+from src.sum import on_request
 
 DEFAULT_QUEUE = 'sum_queue'
 DEFAULT_HOST = 'rabbit'

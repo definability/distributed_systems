@@ -3,8 +3,6 @@
 var RabbitClient = require('./RabbitClient');
 
 var multiplicationClient = new RabbitClient(null, 'mul_queue');
-var completed = 0;
-var products = [];
 
 function multiply (vectors, length, callback) {
     multiplicationClient.connect().then(() => {
