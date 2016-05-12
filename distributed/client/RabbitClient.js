@@ -6,7 +6,7 @@ var assert = require('assert');
 
 const DEFAULT_HOST = 'amqp://rabbit';
 const DEFAULT_QUEUE = 'rpc_queue';
-const TIMEOUT = 5000;
+const TIMEOUT = 50000;
 
 class RabbitClient {
     constructor (host, queue) {

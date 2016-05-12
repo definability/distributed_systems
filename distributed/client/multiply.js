@@ -2,7 +2,7 @@
 
 var RabbitClient = require('./RabbitClient');
 
-var multiplicationClient = new RabbitClient(null, 'mul_queue');
+var multiplicationClient = new RabbitClient(null, 'uni_queue');
 
 function multiply (vectors, length, callback) {
     multiplicationClient.connect().then(() => {
@@ -30,7 +30,11 @@ function send (callback, length, min, max, integer, channels) {
 }
 
 function createMulPromise (multiplicationClient, vectors, channel, fulfill, reject) {
-    multiplicationClient.rpc(JSON.stringify(vectors), channel, (err, result) => {
+    var query = {
+        params: [vectors],
+        method: 'lambda x: sum(a*b for a, b in zip(*x))'
+    }
+    multiplicationClient.rpc(JSON.stringify(query), channel, (err, result) => {
         if (err) {
             return reject(err);
         }
