@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.7.xsd"
+           xmlns="http://www.hazelcast.com/schema/config"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <group>
+   <name>app1</name>
+   <password>app1-pass</password>
+ </group>
+ <network>
+   <join>
+     <multicast enabled="false"></multicast>
+     <tcp-ip enabled="true">
+       <member>hazelcast</member>
+     </tcp-ip>
+   </join>
+ </network>
+ <map name="person">
+   <backup-count>2</backup-count>
+   <async-backup-count>1</async-backup-count>
+ </map>
+ <properties>
+   <property name="hazelcast.initial.min.cluster.size">0</property>
+ </properties>
+</hazelcast>
