@@ -9,8 +9,8 @@ Need to run `RabbitMQ` Docker
 docker run --rm --name rabbit rabbitmq:3
 ```
 
-Each folder `sum`, `mul`, and `client` contain file `docker.sh`.
-Run as much `mul` and `sum` dockers and run applications within via
+Folders `universal` and `client` contain file `docker.sh`.
+Run as much `universal` dockers and run applications within via
 ```bash
 python .
 ```
