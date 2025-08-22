@@ -1,4 +1,5 @@
-# Test text
+# Distributed systems labs
 
-Hello to bro!
+The first lab: https://github.com/definability/software_design/.
+Archived.
 
